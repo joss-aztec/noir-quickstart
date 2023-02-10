@@ -23,7 +23,7 @@ export class WitnessSolver {
     normalisedInput: NormalisedNoirCircuitParameters;
     initialWitness: InitialWitness;
     intermediateWitness: IntermediateWitness;
-    returnValue: NormalisedNoirValue;
+    returnValue: NormalisedNoirValue | null;
     publicWitness: PublicWitness;
   };
 

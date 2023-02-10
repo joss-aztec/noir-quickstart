@@ -1,0 +1,117 @@
+import { join as pathJoin } from "path";
+import { readFile } from "fs/promises";
+import { createHash } from "crypto";
+import { SimpleNoirProver, SimpleNoirVerifier } from "../noir_helper";
+import { CompiledNoirCircuit } from "../noir_helper/compiled_noir_circuit";
+import { createTurboPlonkSimpleNoirProver } from "./turbo_plonk_simple_noir";
+
+async function loadCircuit(name: string) {
+  // Some though it required around whether this can be json or otherwise
+  // requires some transform.
+  const acirBuffer = await readFile(
+    pathJoin(__dirname, `../../test_resources/${name}/target/${name}.acir`)
+  );
+  const acirHash = createHash("sha256").update(acirBuffer).digest("hex");
+  // ISSUE: nargo doesn't output the noir abi!!
+  const noirAbi = undefined;
+  const circuit: CompiledNoirCircuit = {
+    acir: { hash: acirHash, buffer: acirBuffer },
+    noirAbi,
+  };
+  return circuit;
+}
+
+describe("Turbo PLONK simple noir helpers", () => {
+  let prover: SimpleNoirProver;
+  let verifier: SimpleNoirVerifier;
+  let circuit1: CompiledNoirCircuit;
+  const PEDERSEN_456_X =
+    "0x2c074f65ad3f08075ccfdb634f6efecc935b6dd19bbd2e3b68177267a9cb3aff";
+  let circuit2: CompiledNoirCircuit;
+
+  beforeAll(async () => {
+    prover = createTurboPlonkSimpleNoirProver();
+
+    circuit1 = await loadCircuit("circuit1");
+    // For reference - circuit1/src/main.nr:
+    // fn main(x : Field, y : pub Field) -> pub Field {
+    //     constrain x != y;
+    //     std::hash::pedersen([x])[0]
+    // }
+
+    circuit2 = await loadCircuit("circuit2");
+    // For reference - circuit2/src/main.nr:
+    // fn main(x : Field, some_list : pub [Field; 2]) {
+    //     for i in 0..2 {
+    //         constrain x != some_list[i];
+    //     }
+    // }
+  });
+
+  describe("Prover", () => {
+    it("can solve a valid circuit and inputs", async () => {
+      const input = { x: "123", y: 456 };
+      const returnValue = await prover.solve(circuit1, input);
+      const expectedReturnValue = PEDERSEN_456_X;
+      expect(returnValue).toBe(expectedReturnValue);
+    });
+
+    it("throws when solving an invalid circuit input", async () => {
+      const input = { x: 123, y: 123 };
+      const prom = prover.solve(circuit1, input);
+      expect(prom).rejects.toBeDefined();
+    });
+
+    it("proves a valid circuit and inputs", async () => {
+      const input = { x: 123, y: 123 };
+      const { proof, returnValue } = await prover.prove(circuit1, input);
+      expect(proof).toBeDefined();
+      expect(returnValue).toBe(PEDERSEN_456_X);
+    });
+
+    it("doesn't care if you juggle circuits", async () => {
+      const input1 = { x: "123", y: "456" };
+      const input2 = { x: 1, some_list: [2, 3] };
+      const expectedReturnValue1 = PEDERSEN_456_X;
+      const expectedReturnValue2 = null;
+
+      // I'm not sure if this actually should be supported. The prover should
+      // at least throw if not. This is a safety feature rather than aything
+      // a user would ever want to do.
+      prover.prepare(circuit2.acir);
+      const returnValue1Prom = prover.solve(circuit1, input1);
+      prover.prepare(circuit1.acir);
+      const provingResult2Prom = prover.prove(circuit2, input2);
+      prover.prepare(circuit2.acir);
+      const provingResult1Prom = prover.prove(circuit1, input1);
+      const returnValue1 = await returnValue1Prom;
+      const provingResult2 = await provingResult2Prom;
+      const provingResult1 = await provingResult1Prom;
+      expect(returnValue1).toBe(expectedReturnValue1);
+      expect(returnValue1).toBe(provingResult1.returnValue);
+      expect(provingResult2.returnValue).toBe(expectedReturnValue2);
+    });
+  });
+
+  describe("Verifier", () => {
+    it("verifies a valid proof", async () => {
+      const input = { x: 123, y: 456 };
+      const { proof, returnValue } = await prover.prove(circuit1, input);
+      const publicParameters = { y: input.y, return_value: returnValue };
+      const isValid = await verifier.verify(circuit1, proof, publicParameters);
+      expect(isValid).toBe(true);
+    });
+
+    it("rejects an invalid proof", async () => {
+      const publicParameters = { y: 456, return_value: PEDERSEN_456_X };
+      const proofSize = 2368;
+      const badProof = new Uint8Array(proofSize);
+      const isValid = await verifier.verify(
+        circuit1,
+        badProof,
+        publicParameters
+      );
+      expect(isValid).toBe(false);
+    });
+  });
+});

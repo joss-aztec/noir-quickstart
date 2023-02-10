@@ -31,7 +31,7 @@ export class SimpleNoirProver {
     const { intermediateWitness, returnValue, publicWitness } =
       await this.witnessSolver.solve(circuit, input);
     await prepareProm;
-    const proof = this.config.prove(circuit.acir, intermediateWitness);
+    const proof = await this.config.prove(circuit.acir, intermediateWitness);
     return { proof, returnValue, publicWitness };
   }
 }
