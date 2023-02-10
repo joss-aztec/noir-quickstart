@@ -1,6 +1,6 @@
 # Noir Proving and Verifying Quickstart
 
-Preconfigured helpers for proving and verifying noir circuit compiled and Turbo PLONK.
+Preconfigured helpers for proving and verifying noir circuits compiled with Turbo PLONK.
 
 ## Proving
 
