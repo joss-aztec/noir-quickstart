@@ -51,5 +51,10 @@ function normaliseNoirCircuitValue_recursive(
 
 function toHexStr(value: number) {
   if (isNaN(value)) throw new Error(`Invalid input value: '${value}'`);
-  return `0x${value.toString(16)}`;
+  let hex = value.toString(16);
+  if (hex.length % 2 !== 0) {
+    // Force even number of digits
+    hex = "0" + hex;
+  }
+  return `0x${hex}`;
 }
