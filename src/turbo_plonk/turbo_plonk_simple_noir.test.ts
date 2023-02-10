@@ -69,27 +69,22 @@ describe("Turbo PLONK simple noir helpers", () => {
       expect(returnValue).toBe(PEDERSEN_456_X);
     });
 
-    it("doesn't care if you juggle circuits", async () => {
+    it("new backend tasks interupt unfinshed ones", async () => {
+      // I.e. only the most current instruction to the backend should be
+      // honoured. Interrupted preparations and proving should throw.
+
       const input1 = { x: "123", y: "456" };
       const input2 = { x: 1, some_list: [2, 3] };
-      const expectedReturnValue1 = PEDERSEN_456_X;
-      const expectedReturnValue2 = null;
 
-      // I'm not sure if this actually should be supported. The prover should
-      // at least throw if not. This is a safety feature rather than aything
-      // a user would ever want to do.
-      prover.prepare(circuit2.acir);
-      const returnValue1Prom = prover.solve(circuit1, input1);
-      prover.prepare(circuit1.acir);
+      const prepare1Prom = prover.prepare(circuit1.acir);
+      // Start preparation of circuit2 before circuit1's finishes
+      await prover.prepare(circuit2.acir);
+      expect(prepare1Prom).rejects.toBeDefined();
+
       const provingResult2Prom = prover.prove(circuit2, input2);
-      prover.prepare(circuit2.acir);
-      const provingResult1Prom = prover.prove(circuit1, input1);
-      const returnValue1 = await returnValue1Prom;
-      const provingResult2 = await provingResult2Prom;
-      const provingResult1 = await provingResult1Prom;
-      expect(returnValue1).toBe(expectedReturnValue1);
-      expect(returnValue1).toBe(provingResult1.returnValue);
-      expect(provingResult2.returnValue).toBe(expectedReturnValue2);
+      // Start proving (and preparation) of circuit1 before circuit2's finishes
+      await prover.prove(circuit1, input1);
+      expect(provingResult2Prom).rejects.toBeDefined();
     });
   });
 

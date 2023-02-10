@@ -1,19 +1,31 @@
 import { ACIR } from "../../acvm";
 import { IntermediateWitness, PublicWitness } from "../../acvm";
 
-export interface SimpleNoirProverConfig {
+interface SimpleNoirPreparerConfig {
+  // Notifies the backend that user will soon prove/verify for a particular
+  // ACIR. This is an opportunity to build proving/verifying keys, and to
+  // cancel any resources that are not relevant to the ACIR in question. The
+  // implementation should behave as follows:
+  // - If the backend is already prepared to prove/verify for the specified
+  //   ACIR, the promise should instantly resolve.
+  // - If multiple calls are made to prepare in quick succession for the same
+  //   ACIR, they should all resolve together.
+  // - If a call is made to prepare for a different ACIR before a former call
+  //   has resolved, the former call should reject.
   prepare(acir: ACIR): Promise<void>;
+}
+
+export type SimpleNoirProverConfig = SimpleNoirPreparerConfig & {
   prove(
     acir: ACIR,
     intermediateWitness: IntermediateWitness
   ): Promise<Uint8Array>;
-}
+};
 
-export interface SimpleNoirVerifierConfig {
-  prepare(acir: ACIR): Promise<void>;
+export type SimpleNoirVerifierConfig = SimpleNoirPreparerConfig & {
   verify(
     acir: ACIR,
     proof: Uint8Array,
     publicWitness: PublicWitness
   ): Promise<boolean>;
-}
+};
