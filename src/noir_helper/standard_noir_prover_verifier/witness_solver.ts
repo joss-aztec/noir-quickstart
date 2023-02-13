@@ -17,9 +17,8 @@ import { selectNoirReturnValue } from "../select_noir_return_value";
 import { objDeepEquals } from "./utils";
 
 export class WitnessSolver {
-  private prevAcirHash: null | string = null;
-  private prevNoirAbiHash: null | string = null;
   private cache: null | {
+    circuitHash: string;
     normalisedInput: NormalisedNoirCircuitParameters;
     initialWitness: InitialWitness;
     intermediateWitness: IntermediateWitness;
@@ -30,9 +29,7 @@ export class WitnessSolver {
   async solve(circuit: CompiledNoirCircuit, input: NoirCircuitParameters) {
     const normalisedInput = normaliseNoirCircuitInput(input);
     if (
-      this.prevAcirHash === circuit.acir.hash &&
-      this.prevNoirAbiHash === circuit.noirAbi.hash &&
-      this.cache &&
+      this.cache?.circuitHash === circuit.hash &&
       objDeepEquals(normalisedInput, this.cache.normalisedInput)
     ) {
       return this.cache;
@@ -56,6 +53,7 @@ export class WitnessSolver {
     );
 
     this.cache = {
+      circuitHash: circuit.hash,
       normalisedInput,
       initialWitness,
       intermediateWitness,

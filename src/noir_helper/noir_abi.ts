@@ -1,4 +1,1 @@
-export interface NoirAbi {
-  hash: string;
-  buffer: Uint8Array;
-}
+export type NoirAbi = Uint8Array;
