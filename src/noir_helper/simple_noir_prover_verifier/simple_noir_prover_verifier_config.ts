@@ -13,8 +13,14 @@ interface SimpleNoirPreparerConfig {
   // - If a call is made to prepare for a different ACIR before a former call
   //   has resolved, the former call should reject.
   prepare(acir: ACIR): Promise<void>;
+  // Worth considering: changing this interface to speak in terms of events,
+  // or some more explicit interface that has less subtle implementation
+  // requirements.
 }
 
+// Subtle bug danger: if there are multiple instances of some config (i.e.
+// some cache manager), then the backend state may become out of sync with
+// the caches.
 export type SimpleNoirProverConfig = SimpleNoirPreparerConfig & {
   prove(
     acir: ACIR,

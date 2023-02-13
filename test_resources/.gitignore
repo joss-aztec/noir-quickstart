@@ -1,4 +1,4 @@
 Prover.toml
 Verifier.toml
-*.proof
-*.acir
+proofs
+target
