@@ -5,6 +5,6 @@ export async function solveIntermediateWitness(
   acir: ACIR,
   initialWitness: InitialWitness
 ): Promise<IntermediateWitness> {
-  // TODO: incorporate blckbox solvers
+  // TODO: incorporate blackbox solvers
   throw new Error("Unimplemented");
 }
