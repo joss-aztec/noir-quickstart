@@ -1,4 +1,4 @@
 export {
-  createTurboPlonkSimpleNoirProver as createDefaultProver,
-  createTurboPlonkSimpleNoirVerifier as createDefaultVerifier,
+  createTurboPlonkStandardNoirProver as createDefaultProver,
+  createTurboPlonkStandardNoirVerifier as createDefaultVerifier,
 } from "../turbo_plonk";

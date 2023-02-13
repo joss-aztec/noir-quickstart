@@ -1,7 +1,7 @@
 import { ACIR } from "../../acvm";
 import { IntermediateWitness, PublicWitness } from "../../acvm";
 
-interface SimpleNoirPreparerConfig {
+interface StandardNoirPreparerConfig {
   // Notifies the backend that user will soon prove/verify for a particular
   // ACIR. This is an opportunity to build proving/verifying keys, and to
   // cancel any resources that are not relevant to the ACIR in question. The
@@ -21,14 +21,14 @@ interface SimpleNoirPreparerConfig {
 // Subtle bug danger: if there are multiple instances of some config (i.e.
 // some cache manager), then the backend state may become out of sync with
 // the caches.
-export type SimpleNoirProverConfig = SimpleNoirPreparerConfig & {
+export type StandardNoirProverConfig = StandardNoirPreparerConfig & {
   prove(
     acir: ACIR,
     intermediateWitness: IntermediateWitness
   ): Promise<Uint8Array>;
 };
 
-export type SimpleNoirVerifierConfig = SimpleNoirPreparerConfig & {
+export type StandardNoirVerifierConfig = StandardNoirPreparerConfig & {
   verify(
     acir: ACIR,
     proof: Uint8Array,

@@ -1,12 +1,12 @@
 import { CompiledNoirCircuit } from "../compiled_noir_circuit";
 import { NoirCircuitParameters } from "../noir_circuit_values";
-import { SimpleNoirProverConfig } from "./simple_noir_prover_verifier_config";
+import { StandardNoirProverConfig } from "./standard_noir_prover_verifier_config";
 import { WitnessSolver } from "./witness_solver";
 import { ACIR } from "../../acvm";
 
-export class SimpleNoirProver {
+export class StandardNoirProver {
   private witnessSolver: WitnessSolver;
-  constructor(private config: SimpleNoirProverConfig) {
+  constructor(private config: StandardNoirProverConfig) {
     this.witnessSolver = new WitnessSolver();
   }
 

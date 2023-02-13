@@ -1,11 +1,11 @@
 import {
-  SimpleNoirProver,
-  SimpleNoirVerifier,
-  SimpleNoirProverConfig,
-  SimpleNoirVerifierConfig,
+  StandardNoirProver,
+  StandardNoirVerifier,
+  StandardNoirProverConfig,
+  StandardNoirVerifierConfig,
 } from "../noir_helper";
 
-export const TURBO_PLONK_SIMPLE_NOIR_PROVER_CONFIG: SimpleNoirProverConfig = {
+export const TURBO_PLONK_SIMPLE_NOIR_PROVER_CONFIG: StandardNoirProverConfig = {
   prepare: async () => {
     // TODO: Build proving key and do lazy wasm loading
   },
@@ -14,11 +14,11 @@ export const TURBO_PLONK_SIMPLE_NOIR_PROVER_CONFIG: SimpleNoirProverConfig = {
   },
 };
 
-export function createTurboPlonkSimpleNoirProver() {
-  return new SimpleNoirProver(TURBO_PLONK_SIMPLE_NOIR_PROVER_CONFIG);
+export function createTurboPlonkStandardNoirProver() {
+  return new StandardNoirProver(TURBO_PLONK_SIMPLE_NOIR_PROVER_CONFIG);
 }
 
-export const TURBO_PLONK_SIMPLE_NOIR_VERIFIER_CONFIG: SimpleNoirVerifierConfig =
+export const TURBO_PLONK_SIMPLE_NOIR_VERIFIER_CONFIG: StandardNoirVerifierConfig =
   {
     prepare: async () => {
       // TODO: Build verifying key and do lazy wasm loading
@@ -28,6 +28,6 @@ export const TURBO_PLONK_SIMPLE_NOIR_VERIFIER_CONFIG: SimpleNoirVerifierConfig =
     },
   };
 
-export function createTurboPlonkSimpleNoirVerifier() {
-  return new SimpleNoirVerifier(TURBO_PLONK_SIMPLE_NOIR_VERIFIER_CONFIG);
+export function createTurboPlonkStandardNoirVerifier() {
+  return new StandardNoirVerifier(TURBO_PLONK_SIMPLE_NOIR_VERIFIER_CONFIG);
 }

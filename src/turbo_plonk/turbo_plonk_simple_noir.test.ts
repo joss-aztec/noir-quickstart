@@ -1,9 +1,9 @@
 import { join as pathJoin } from "path";
 import { readFile } from "fs/promises";
 import { createHash } from "crypto";
-import { SimpleNoirProver, SimpleNoirVerifier } from "../noir_helper";
+import { StandardNoirProver, StandardNoirVerifier } from "../noir_helper";
 import { CompiledNoirCircuit } from "../noir_helper/compiled_noir_circuit";
-import { createTurboPlonkSimpleNoirProver } from "./turbo_plonk_simple_noir";
+import { createTurboPlonkStandardNoirProver } from "./turbo_plonk_simple_noir";
 
 async function loadCircuit(name: string) {
   // Some though it required around whether this can be json or otherwise
@@ -22,15 +22,15 @@ async function loadCircuit(name: string) {
 }
 
 describe("Turbo PLONK simple noir helpers", () => {
-  let prover: SimpleNoirProver;
-  let verifier: SimpleNoirVerifier;
+  let prover: StandardNoirProver;
+  let verifier: StandardNoirVerifier;
   let circuit1: CompiledNoirCircuit;
   const PEDERSEN_456_X =
     "0x2c074f65ad3f08075ccfdb634f6efecc935b6dd19bbd2e3b68177267a9cb3aff";
   let circuit2: CompiledNoirCircuit;
 
   beforeAll(async () => {
-    prover = createTurboPlonkSimpleNoirProver();
+    prover = createTurboPlonkStandardNoirProver();
 
     circuit1 = await loadCircuit("circuit1");
     // For reference - circuit1/src/main.nr:
