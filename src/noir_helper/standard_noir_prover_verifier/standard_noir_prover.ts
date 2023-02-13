@@ -1,17 +1,15 @@
 import { CompiledNoirCircuit } from "../compiled_noir_circuit";
 import { NoirCircuitParameters } from "../noir_circuit_values";
 import { StandardNoirProverConfig } from "./standard_noir_prover_verifier_config";
-import { WitnessSolver } from "./witness_solver";
+import { CachedNoirCircuitSolver } from "./cached_noir_circuit_solver";
 import { ACIR } from "../../acvm";
 
 export class StandardNoirProver {
-  private witnessSolver: WitnessSolver;
-  constructor(private config: StandardNoirProverConfig) {
-    this.witnessSolver = new WitnessSolver();
-  }
+  private solver = new CachedNoirCircuitSolver();
+  constructor(private config: StandardNoirProverConfig) {}
 
   async solve(circuit: CompiledNoirCircuit, input: NoirCircuitParameters) {
-    const { returnValue } = await this.witnessSolver.solve(circuit, input);
+    const { returnValue } = await this.solver.solve(circuit, input);
     return returnValue;
   }
 
@@ -22,10 +20,10 @@ export class StandardNoirProver {
   async prove(circuit: CompiledNoirCircuit, input: NoirCircuitParameters) {
     // Might as well prepare in parallel
     const prepareProm = this.config.prepare(circuit.acir);
-    // Note that the classes below avoid repeating unnecessary work, so it's
+    // Note that the class below avoids repeating unnecessary work, so it's
     // fine to call solve & prove in any order.
     const { intermediateWitness, returnValue, publicWitness } =
-      await this.witnessSolver.solve(circuit, input);
+      await this.solver.solve(circuit, input);
     await prepareProm;
     const proof = await this.config.prove(circuit.acir, intermediateWitness);
     return { proof, returnValue, publicWitness };

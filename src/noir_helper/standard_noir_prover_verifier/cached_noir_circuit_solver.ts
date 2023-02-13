@@ -16,7 +16,7 @@ import {
 import { selectNoirReturnValue } from "../select_noir_return_value";
 import { objDeepEquals } from "./utils";
 
-export class WitnessSolver {
+export class CachedNoirCircuitSolver {
   private cache: null | {
     circuitHash: string;
     normalisedInput: NormalisedNoirCircuitParameters;
