@@ -1,7 +1,20 @@
 import { createHash } from "crypto";
 import { StandardNoirProver, StandardNoirVerifier } from "../noir_helper";
 import { CompiledNoirCircuit } from "../noir_helper/compiled_noir_circuit";
-import { createTurboPlonkStandardNoirProver } from "./turbo_plonk_simple_noir";
+import {
+  createTurboPlonkStandardNoirProver,
+  createTurboPlonkStandardNoirVerifier,
+} from "./turbo_plonk_simple_noir";
+
+let muteConsoleError = false;
+const originalConsole = global.console;
+global.console = {
+  ...originalConsole,
+  error: (...args) => {
+    if (muteConsoleError) return;
+    return originalConsole.error(...args);
+  },
+};
 
 async function loadCircuit(name: string) {
   const build = require(`../../test_resources/${name}/target/${name}.json`);
@@ -26,6 +39,7 @@ describe("Turbo PLONK simple noir helpers", () => {
 
   beforeAll(async () => {
     prover = createTurboPlonkStandardNoirProver();
+    verifier = createTurboPlonkStandardNoirVerifier();
 
     circuit1 = await loadCircuit("circuit1");
     // For reference - circuit1/src/main.nr:
@@ -53,12 +67,14 @@ describe("Turbo PLONK simple noir helpers", () => {
 
     it("throws when solving an invalid circuit input", async () => {
       const input = { x: 123, y: 123 };
+      muteConsoleError = true;
       const prom = prover.solve(circuit1, input);
-      expect(prom).rejects.toBeDefined();
+      await expect(prom).rejects.toBeDefined();
+      muteConsoleError = false;
     });
 
     it("proves a valid circuit and inputs", async () => {
-      const input = { x: 123, y: 123 };
+      const input = { x: 123, y: 456 };
       const { proof, returnValue } = await prover.prove(circuit1, input);
       expect(proof).toBeDefined();
       expect(returnValue).toBe(PEDERSEN_456_X);
