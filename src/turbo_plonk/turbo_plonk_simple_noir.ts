@@ -4,9 +4,10 @@ import {
   StandardNoirProverConfig,
   StandardNoirVerifierConfig,
 } from "../noir_helper";
+import { StopgapBarretenbergCachedNoirCircuitSolver } from "./stopgap_cached_noir_circuit_solver";
 
 export const TURBO_PLONK_SIMPLE_NOIR_PROVER_CONFIG: StandardNoirProverConfig = {
-  prepare: async () => {
+  prepare: async (acir) => {
     // TODO: Build proving key and do lazy wasm loading
   },
   prove: async (acir, intermediateWitness) => {
@@ -15,7 +16,10 @@ export const TURBO_PLONK_SIMPLE_NOIR_PROVER_CONFIG: StandardNoirProverConfig = {
 };
 
 export function createTurboPlonkStandardNoirProver() {
-  return new StandardNoirProver(TURBO_PLONK_SIMPLE_NOIR_PROVER_CONFIG);
+  return new StandardNoirProver(
+    TURBO_PLONK_SIMPLE_NOIR_PROVER_CONFIG,
+    new StopgapBarretenbergCachedNoirCircuitSolver()
+  );
 }
 
 export const TURBO_PLONK_SIMPLE_NOIR_VERIFIER_CONFIG: StandardNoirVerifierConfig =

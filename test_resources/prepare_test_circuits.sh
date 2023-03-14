@@ -7,7 +7,7 @@ test_resources_dir=$(pwd)
 # build of noir.
 
 # TODO: The version should be probably be inferred from dependecies
-TARGET_NARGO_VER="0.1.1"
+TARGET_NARGO_VER="0.3.0"
 
 # Assumes noirup is installed
 # TODO: skip if already has correct version

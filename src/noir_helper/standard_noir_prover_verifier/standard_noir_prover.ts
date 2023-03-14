@@ -1,12 +1,20 @@
 import { CompiledNoirCircuit } from "../compiled_noir_circuit";
 import { NoirCircuitParameters } from "../noir_circuit_values";
 import { StandardNoirProverConfig } from "./standard_noir_prover_verifier_config";
-import { CachedNoirCircuitSolver } from "./cached_noir_circuit_solver";
+import {
+  CachedNoirCircuitSolver,
+  DefaultCachedNoirCircuitSolver,
+} from "./cached_noir_circuit_solver";
 import { ACIR } from "../../acvm";
 
 export class StandardNoirProver {
-  private solver = new CachedNoirCircuitSolver();
-  constructor(private config: StandardNoirProverConfig) {}
+  private solver: CachedNoirCircuitSolver;
+  constructor(
+    private config: StandardNoirProverConfig,
+    solve?: CachedNoirCircuitSolver
+  ) {
+    this.solver = solve ?? new DefaultCachedNoirCircuitSolver();
+  }
 
   async solve(circuit: CompiledNoirCircuit, input: NoirCircuitParameters) {
     const { returnValue } = await this.solver.solve(circuit, input);

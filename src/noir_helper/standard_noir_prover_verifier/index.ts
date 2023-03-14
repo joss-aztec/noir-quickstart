@@ -1,4 +1,8 @@
-export { CachedNoirCircuitSolver } from "./cached_noir_circuit_solver";
+export {
+  CachedNoirCircuitSolver,
+  DefaultCachedNoirCircuitSolver,
+  NoirCircuitSolution,
+} from "./cached_noir_circuit_solver";
 export { StandardNoirProver } from "./standard_noir_prover";
 export { StandardNoirVerifier } from "./standard_noir_verifier";
 export {

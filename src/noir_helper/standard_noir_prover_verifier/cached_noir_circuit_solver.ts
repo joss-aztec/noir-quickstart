@@ -16,15 +16,24 @@ import {
 import { selectNoirReturnValue } from "../select_noir_return_value";
 import { objDeepEquals } from "./utils";
 
-export class CachedNoirCircuitSolver {
-  private cache: null | {
-    circuitHash: string;
-    normalisedInput: NormalisedNoirCircuitParameters;
-    initialWitness: InitialWitness;
-    intermediateWitness: IntermediateWitness;
-    returnValue: NormalisedNoirValue | null;
-    publicWitness: PublicWitness;
-  };
+export interface NoirCircuitSolution {
+  circuitHash: string;
+  normalisedInput: NormalisedNoirCircuitParameters;
+  initialWitness: InitialWitness;
+  intermediateWitness: IntermediateWitness;
+  returnValue: NormalisedNoirValue | null;
+  publicWitness: PublicWitness;
+}
+
+export interface CachedNoirCircuitSolver {
+  solve(
+    circuit: CompiledNoirCircuit,
+    input: NoirCircuitParameters
+  ): Promise<NoirCircuitSolution>;
+}
+
+export class DefaultCachedNoirCircuitSolver implements CachedNoirCircuitSolver {
+  private cache: null | NoirCircuitSolution;
 
   async solve(circuit: CompiledNoirCircuit, input: NoirCircuitParameters) {
     const normalisedInput = normaliseNoirCircuitInput(input);

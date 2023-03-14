@@ -1,1 +1,1 @@
-export type NoirAbi = Uint8Array;
+export type NoirAbi = unknown;

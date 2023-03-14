@@ -1,21 +1,16 @@
-import { join as pathJoin } from "path";
-import { readFile } from "fs/promises";
 import { createHash } from "crypto";
 import { StandardNoirProver, StandardNoirVerifier } from "../noir_helper";
 import { CompiledNoirCircuit } from "../noir_helper/compiled_noir_circuit";
 import { createTurboPlonkStandardNoirProver } from "./turbo_plonk_simple_noir";
 
 async function loadCircuit(name: string) {
-  // Some though it required around whether this can be json or otherwise
-  // requires some transform.
-  const acirBuffer = await readFile(
-    pathJoin(__dirname, `../../test_resources/${name}/target/${name}.acir`)
-  );
+  const build = require(`../../test_resources/${name}/target/${name}.json`);
+  const acirBuffer = Uint8Array.from(build.circuit);
   const acirHash = createHash("sha256").update(acirBuffer).digest("hex");
-  // ISSUE: nargo doesn't output the noir abi!!
-  const noirAbi = undefined;
+  const noirAbi = build.abi;
   const circuit: CompiledNoirCircuit = {
-    acir: { hash: acirHash, buffer: acirBuffer },
+    hash: acirHash,
+    acir: acirBuffer,
     noirAbi,
   };
   return circuit;
