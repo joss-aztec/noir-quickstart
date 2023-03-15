@@ -139,8 +139,7 @@ class TurboPlonkStandardNoirConfig
     const { prover } = await this.activeSetup.prom;
     const proof = await prover.createProof(assignments);
     // Proof comes prepended with public inputs
-    // Minus 1 because the 0th witness is inferred as always 0
-    const publicInputsLength = public_input_length(acir) - 1;
+    const publicInputsLength = public_input_length(acir);
     const trimmedProof = proof.slice(publicInputsLength * 32);
     return trimmedProof;
   }

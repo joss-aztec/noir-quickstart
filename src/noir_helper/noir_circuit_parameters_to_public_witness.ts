@@ -9,7 +9,11 @@ export async function noirCircuitParametersToPublicWitness(
   parameters: NoirCircuitParameters
 ): Promise<PublicWitness> {
   const abiJsonStr = JSON.stringify(circuit.noirAbi);
-  const paramsJsonStr = JSON.stringify(parameters);
+  // The abi expects the return value to be named "return", i.e. not
+  // "returnValue" or "return_value".
+  const { returnValue, return_value, ...fixedParameters } = parameters;
+  fixedParameters["return"] = returnValue ?? return_value;
+  const paramsJsonStr = JSON.stringify(fixedParameters);
   const witnessMap = arrange_public_witness(abiJsonStr, paramsJsonStr);
   return Object.fromEntries(witnessMap.entries());
   // Tests:

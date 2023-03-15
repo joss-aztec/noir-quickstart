@@ -2,7 +2,13 @@
   "name": "@noir-lang/quickstart",
   "version": "1.0.0",
   "description": "Prove and verify proofs built with noir and Turbo PLONK.",
-  "main": "index.js",
+  "main": "dist/quickstart.cjs.js",
+  "module": "dist/quickstart.esm.js",
+  "browser": "dist/quickstart.umd.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "prepare:test": "./test_resources/prepare_test_circuits.sh",
     "test": "jest"
@@ -12,11 +18,13 @@
   "dependencies": {
     "@noir-lang/barretenberg": "github:noir-lang/barretenberg#39a1547875f941ef6640217a42d8f34972425c97",
     "@noir-lang/barretenberg_browser_stopgap_wasm": "github:joss-aztec/barretenberg_browser_stopgap_wasm_build#b2da5ca8c7d1e76eaafe83c720abaafd5868247a",
-    "@noir-lang/noir_util_wasm": "github:joss-aztec/noir_util_wasm#98efe8ddb350bccc72e97885e184c08bd47edcf6"
+    "@noir-lang/noir_util_wasm": "github:joss-aztec/noir_util_wasm#1a8258a56534f185ba3c4d9696b42c2edb298e16"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^11.0.0",
     "@types/jest": "^29.4.0",
     "jest": "^29.4.2",
+    "rollup": "^3.19.1",
     "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1"
   }
