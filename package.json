@@ -11,8 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "@noir-lang/barretenberg": "github:noir-lang/barretenberg#39a1547875f941ef6640217a42d8f34972425c97",
-    "@noir-lang/barretenberg_browser_stopgap_wasm": "github:joss-aztec/barretenberg_browser_stopgap_wasm_build#6b18358e1d513642bb93080c9c7a3f965cd54f2f",
-    "@noir-lang/noir_util_wasm": "github:joss-aztec/noir_util_wasm#c6c3d341765449df39a6d71390bb1a49e0331973"
+    "@noir-lang/barretenberg_browser_stopgap_wasm": "github:joss-aztec/barretenberg_browser_stopgap_wasm_build#b2da5ca8c7d1e76eaafe83c720abaafd5868247a",
+    "@noir-lang/noir_util_wasm": "github:joss-aztec/noir_util_wasm#98efe8ddb350bccc72e97885e184c08bd47edcf6"
   },
   "devDependencies": {
     "@types/jest": "^29.4.0",

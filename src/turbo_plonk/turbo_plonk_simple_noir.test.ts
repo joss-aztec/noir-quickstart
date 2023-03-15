@@ -6,6 +6,8 @@ import {
   createTurboPlonkStandardNoirVerifier,
 } from "./turbo_plonk_simple_noir";
 
+jest.setTimeout(20e3);
+
 let muteConsoleError = false;
 const originalConsole = global.console;
 global.console = {
@@ -108,15 +110,11 @@ describe("Turbo PLONK simple noir helpers", () => {
       expect(isValid).toBe(true);
     });
 
-    it("rejects an invalid proof", async () => {
-      const publicParameters = { y: 456, return_value: PEDERSEN_456_X };
-      const proofSize = 2368;
-      const badProof = new Uint8Array(proofSize);
-      const isValid = await verifier.verify(
-        circuit1,
-        badProof,
-        publicParameters
-      );
+    it("rejects invalid proof inputs", async () => {
+      const input = { x: 123, y: 456 };
+      const { proof, returnValue } = await prover.prove(circuit1, input);
+      const publicParameters = { y: 789, return_value: returnValue };
+      const isValid = await verifier.verify(circuit1, proof, publicParameters);
       expect(isValid).toBe(false);
     });
   });

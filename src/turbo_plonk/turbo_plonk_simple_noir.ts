@@ -21,6 +21,8 @@ import { ACIR, IntermediateWitness, PublicWitness } from "../acvm";
 import {
   acir_to_constraints_system,
   intermediate_witness_to_assignment_bytes,
+  public_input_as_bytes,
+  public_input_length,
 } from "@noir-lang/barretenberg_browser_stopgap_wasm";
 
 async function load_crs(circSize: number) {
@@ -86,6 +88,10 @@ function uint8ArrayIsEqual(arr1: Uint8Array | null, arr2: Uint8Array | null) {
   return true;
 }
 
+function witnessToMap(witness: IntermediateWitness | PublicWitness) {
+  return new Map(Object.entries(witness).map(([k, v]) => [Number(k), v]));
+}
+
 interface ActiveSetup {
   acir: ACIR;
   prom: Promise<{
@@ -131,20 +137,26 @@ class TurboPlonkStandardNoirConfig
       )
     );
     const { prover } = await this.activeSetup.prom;
-    const proof = prover.createProof(assignments);
-    // TODO: remove prepended public variables
-    return proof;
+    const proof = await prover.createProof(assignments);
+    // Proof comes prepended with public inputs
+    // Minus 1 because the 0th witness is inferred as always 0
+    const publicInputsLength = public_input_length(acir) - 1;
+    const trimmedProof = proof.slice(publicInputsLength * 32);
+    return trimmedProof;
   }
 
   async verify(
     acir: Uint8Array,
     proof: Uint8Array,
-    _publicWitness: PublicWitness
+    publicWitness: PublicWitness
   ) {
     this.assertSetup(acir);
     const { verifier } = await this.activeSetup.prom;
-    // TODO: prepend public variables once proof has been normalised
-    const isValid = verifier.verifyProof(proof);
+    const publicInput = public_input_as_bytes(witnessToMap(publicWitness));
+    const inputsAndProof = new Uint8Array(publicInput.length + proof.length);
+    inputsAndProof.set(publicInput);
+    inputsAndProof.set(proof, publicInput.length);
+    const isValid = await verifier.verifyProof(inputsAndProof);
     return isValid;
   }
 }
