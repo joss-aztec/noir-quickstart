@@ -2,8 +2,8 @@
   "name": "@noir-lang/quickstart",
   "version": "1.0.0",
   "description": "Prove and verify proofs built with noir and Turbo PLONK.",
-  "main": "dist/quickstart.cjs.js",
-  "module": "dist/quickstart.esm.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
   "types": "dist/types/src/index.d.ts",
   "files": [
     "dist"
@@ -16,16 +16,17 @@
   "license": "ISC",
   "dependencies": {
     "@noir-lang/aztec_backend": "https://github.com/kobyhallx/aztec-backend#1bcdd4bf67dad1ab977867f1d655bcab7085a518",
-    "@noir-lang/barretenberg": "github:noir-lang/barretenberg#39a1547875f941ef6640217a42d8f34972425c97",
+    "@noir-lang/barretenberg": "github:noir-lang/barretenberg#9c0765e663cdbcdd6bec07f7b4dc01e92e12e0b9",
     "@noir-lang/barretenberg_browser_stopgap_wasm": "github:joss-aztec/barretenberg_browser_stopgap_wasm_build#b2da5ca8c7d1e76eaafe83c720abaafd5868247a",
-    "@noir-lang/noir_util_wasm": "github:joss-aztec/noir_util_wasm#1a8258a56534f185ba3c4d9696b42c2edb298e16"
+    "@noir-lang/noir_util_wasm": "github:joss-aztec/noir_util_wasm#1a8258a56534f185ba3c4d9696b42c2edb298e16",
+    "comlink": "^4.4.1",
+    "web-worker": "^1.2.0"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^11.0.0",
+    "@swc/cli": "^0.1.62",
+    "@swc/core": "^1.3.41",
     "@types/jest": "^29.4.0",
     "jest": "^29.4.2",
-    "rollup": "^3.19.1",
-    "rollup-plugin-copy": "^3.4.0",
     "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1"
   }

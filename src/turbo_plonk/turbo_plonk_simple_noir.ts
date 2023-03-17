@@ -13,6 +13,8 @@ import {
   Prover,
   StandardExampleProver,
   StandardExampleVerifier,
+  Crs,
+  WorkerPool,
 } from "@noir-lang/barretenberg";
 import { Crs } from "@noir-lang/barretenberg/src/crs";
 import { WorkerPool } from "@noir-lang/barretenberg/src/wasm";

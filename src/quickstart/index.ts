@@ -1,4 +1,1 @@
-export {
-  createTurboPlonkStandardNoirProver as createDefaultProver,
-  createTurboPlonkStandardNoirVerifier as createDefaultVerifier,
-} from "../turbo_plonk";
+export * from "./turbo_plonk_worker_driver";
