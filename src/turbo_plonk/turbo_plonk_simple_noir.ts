@@ -14,8 +14,8 @@ import {
   StandardExampleProver,
   StandardExampleVerifier,
 } from "@noir-lang/barretenberg";
-import { Crs } from "@noir-lang/barretenberg/dest/crs";
-import { WorkerPool } from "@noir-lang/barretenberg/dest/wasm";
+import { Crs } from "@noir-lang/barretenberg/src/crs";
+import { WorkerPool } from "@noir-lang/barretenberg/src/wasm";
 
 import { ACIR, IntermediateWitness, PublicWitness } from "../acvm";
 import {
@@ -24,6 +24,8 @@ import {
   public_input_as_bytes,
   public_input_length,
 } from "@noir-lang/barretenberg_browser_stopgap_wasm";
+import { initBarretenbergBrowserStopgapWasmProm } from "./barretenberg_browser_stopgap_wasm_init";
+import { initAztecBackendProm } from "./aztec_backend_wasm_init";
 
 async function load_crs(circSize: number) {
   // We may need more elements in the SRS than the circuit size. In particular, we may need circSize +1
@@ -44,7 +46,7 @@ export async function setup_generic_prover_and_verifier(acir: Uint8Array) {
 
   const crs = await load_crs(circSize);
 
-  const numWorkers = 4; //getNumCores();
+  const numWorkers = 16; //getNumCores();
 
   const wasm = await BarretenbergWasm.new();
   const workerPool = await WorkerPool.new(wasm, numWorkers);
@@ -57,6 +59,7 @@ export async function setup_generic_prover_and_verifier(acir: Uint8Array) {
 
   const prover = new Prover(workerPool.workers[0], pippenger, fft);
 
+  await initAztecBackendProm;
   const standardExampleProver = new StandardExampleProver(prover);
   await standardExampleProver.initCircuitDefinition(serialised_circuit);
   const standardExampleVerifier = new StandardExampleVerifier();
@@ -131,6 +134,7 @@ class TurboPlonkStandardNoirConfig
 
   async prove(acir: Uint8Array, intermediateWitness: IntermediateWitness) {
     this.assertSetup(acir);
+    await initBarretenbergBrowserStopgapWasmProm;
     const assignments = intermediate_witness_to_assignment_bytes(
       new Map(
         Object.entries(intermediateWitness).map(([k, v]) => [Number(k), v])
@@ -151,6 +155,7 @@ class TurboPlonkStandardNoirConfig
   ) {
     this.assertSetup(acir);
     const { verifier } = await this.activeSetup.prom;
+    await initBarretenbergBrowserStopgapWasmProm;
     const publicInput = public_input_as_bytes(witnessToMap(publicWitness));
     const inputsAndProof = new Uint8Array(publicInput.length + proof.length);
     inputsAndProof.set(publicInput);

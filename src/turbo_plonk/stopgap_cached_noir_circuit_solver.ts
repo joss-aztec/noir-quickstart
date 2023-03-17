@@ -13,7 +13,9 @@ import {
   NoirCircuitParameters,
   normaliseNoirCircuitInput,
 } from "../noir_helper/noir_circuit_values";
+import { initNoirUtilWasmProm } from "../noir_helper/noir_util_wasm_init";
 import { objDeepEquals } from "../noir_helper/standard_noir_prover_verifier/utils";
+import { initBarretenbergBrowserStopgapWasmProm } from "./barretenberg_browser_stopgap_wasm_init";
 
 export class StopgapBarretenbergCachedNoirCircuitSolver
   implements CachedNoirCircuitSolver
@@ -30,7 +32,9 @@ export class StopgapBarretenbergCachedNoirCircuitSolver
     }
     const abiJsonStr = JSON.stringify(circuit.noirAbi);
     const inputJsonStr = JSON.stringify(input);
+    await initNoirUtilWasmProm;
     const initialWitness = arrange_initial_witness(abiJsonStr, inputJsonStr);
+    await initBarretenbergBrowserStopgapWasmProm;
     const intermediateWitness = solve_intermediate_witness(
       circuit.acir,
       initialWitness
